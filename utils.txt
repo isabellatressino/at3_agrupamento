@@ -1,0 +1,2 @@
+https://scikit-learn.org/stable/modules/clustering.html#k-means
+https://scikit-learn.org/stable/modules/preprocessing.html#normalization
