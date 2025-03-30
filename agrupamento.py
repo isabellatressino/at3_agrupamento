@@ -6,6 +6,7 @@ from sklearn.cluster import KMeans
 from sklearn.preprocessing import StandardScaler
 from sklearn.decomposition import PCA
 from sklearn.datasets import load_iris, load_wine
+from scipy.cluster.hierarchy import dendrogram, linkage
 
 # Base de dados
 iris_data = load_iris()
@@ -81,7 +82,7 @@ def plot_clusters(df_normalized, dataset_name):
     pca = PCA(n_components=2)
     reduced_data = pca.fit_transform(df_normalized.drop(columns=['Cluster']))
 
-    plt.figure(figsize=(8,6))
+    plt.figure(figsize=(6,4))
     sns.scatterplot(x=reduced_data[:,0], y=reduced_data[:,1], hue=df_normalized['Cluster'], palette='viridis', s=50)
     plt.xlabel("Componente Principal 1")
     plt.ylabel("Componente Principal 2")
@@ -90,3 +91,25 @@ def plot_clusters(df_normalized, dataset_name):
 
 plot_clusters(df_iris_normalized, "Iris")
 plot_clusters(df_wine_normalized, "Wine")
+
+# Função que faz os algoritmos linkage e plota o dedograma
+def plot_dendrogram(df_normalized, dataset_name, method):
+    plt.figure(figsize=(6,4))
+    linked = linkage(df_normalized.drop(columns=['Cluster']), method=method)
+    dendrogram(linked)
+    plt.xlabel("Amostras")
+    plt.ylabel("Distância")
+    plt.title(f"Dendrograma - {dataset_name} ({method})")
+    plt.show()
+
+plot_dendrogram(df_iris_normalized,'Iris','single')
+plot_dendrogram(df_wine_normalized,'Wine','single')
+
+plot_dendrogram(df_iris_normalized,'Iris','complete')
+plot_dendrogram(df_wine_normalized,'Wine','complete')
+
+plot_dendrogram(df_iris_normalized,'Iris','average')
+plot_dendrogram(df_wine_normalized,'Wine','average')
+
+plot_dendrogram(df_iris_normalized,'Iris','ward')
+plot_dendrogram(df_wine_normalized,'Wine','ward')
