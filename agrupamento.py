@@ -6,7 +6,8 @@ from sklearn.cluster import KMeans
 from sklearn.preprocessing import StandardScaler
 from sklearn.decomposition import PCA
 from sklearn.datasets import load_iris, load_wine
-from scipy.cluster.hierarchy import dendrogram, linkage
+from scipy.cluster.hierarchy import dendrogram, linkage, fcluster
+from sklearn.metrics import silhouette_score
 
 # Base de dados
 iris_data = load_iris()
@@ -67,10 +68,10 @@ kmeans_iris = KMeans(n_clusters=k_iris, random_state=0, n_init=10)
 kmeans_wine = KMeans(n_clusters=k_wine, random_state=0, n_init=10)
 
 # Adicionando a coluna do cluster
-df_iris_normalized['Cluster'] = kmeans_iris.fit_predict(df_iris_normalized)
-df_wine_normalized['Cluster'] = kmeans_wine.fit_predict(df_wine_normalized)
+df_iris_normalized['Cluster_KMeans'] = kmeans_iris.fit_predict(df_iris_normalized)
+df_wine_normalized['Cluster_KMeans'] = kmeans_wine.fit_predict(df_wine_normalized)
 
-# Exibir as primeiras linhas com os clusters
+# Exibir as primeiras linhas com os clusters kmeans
 print("\nIris com Clusters:")
 print(df_iris_normalized.head())
 
@@ -80,10 +81,10 @@ print(df_wine_normalized.head())
 # Função que realiza a PCA e plota o grafico
 def plot_clusters(df_normalized, dataset_name):
     pca = PCA(n_components=2)
-    reduced_data = pca.fit_transform(df_normalized.drop(columns=['Cluster']))
+    reduced_data = pca.fit_transform(df_normalized.drop(columns=['Cluster_KMeans']))
 
     plt.figure(figsize=(6,4))
-    sns.scatterplot(x=reduced_data[:,0], y=reduced_data[:,1], hue=df_normalized['Cluster'], palette='viridis', s=50)
+    sns.scatterplot(x=reduced_data[:,0], y=reduced_data[:,1], hue=df_normalized['Cluster_KMeans'], palette='viridis', s=50)
     plt.xlabel("Componente Principal 1")
     plt.ylabel("Componente Principal 2")
     plt.title(f"Clusters - {dataset_name}")
@@ -95,7 +96,7 @@ plot_clusters(df_wine_normalized, "Wine")
 # Função que faz os algoritmos linkage e plota o dedograma
 def plot_dendrogram(df_normalized, dataset_name, method):
     plt.figure(figsize=(6,4))
-    linked = linkage(df_normalized.drop(columns=['Cluster']), method=method)
+    linked = linkage(df_normalized.drop(columns=['Cluster_KMeans']), method=method)
     dendrogram(linked)
     plt.xlabel("Amostras")
     plt.ylabel("Distância")
@@ -113,3 +114,33 @@ plot_dendrogram(df_wine_normalized,'Wine','average')
 
 plot_dendrogram(df_iris_normalized,'Iris','ward')
 plot_dendrogram(df_wine_normalized,'Wine','ward')
+
+# Função para aplicar agrupamento hierárquico e gerar os clusters
+def hierarchical_clustering(df_normalized, method, k):
+    linked = linkage(df_normalized.drop(columns=['Cluster_KMeans']), method=method)
+    clusters = fcluster(linked, t=k, criterion='maxclust')
+    return clusters
+
+# Adicionando a coluna do cluster
+df_iris_normalized['Cluster_Hierarchical'] = hierarchical_clustering(df_iris_normalized, 'complete', 3)
+df_wine_normalized['Cluster_Hierarchical'] = hierarchical_clustering(df_wine_normalized, 'ward', 3)
+
+# Exibir as primeiras linhas com os clusters kmenas e linkage ward
+print("\nIris com Clusters:")
+print(df_iris_normalized.head())
+
+print("\nWine com Clusters:")
+print(df_wine_normalized.head())
+
+# Silhouette score
+silhouette_iris = silhouette_score(df_iris_normalized.drop(columns=['Cluster_KMeans', 'Cluster_Hierarchical']), df_iris_normalized['Cluster_KMeans'])
+silhouette_wine = silhouette_score(df_wine_normalized.drop(columns=['Cluster_KMeans', 'Cluster_Hierarchical']), df_wine_normalized['Cluster_KMeans'])
+
+print(f"Silhouette Score - Iris (KMeans): {silhouette_iris}")
+print(f"Silhouette Score - Wine (KMeans): {silhouette_wine}")
+
+silhouette_iris_hierarchical = silhouette_score(df_iris_normalized.drop(columns=['Cluster_KMeans', 'Cluster_Hierarchical']), df_iris_normalized['Cluster_Hierarchical'])
+silhouette_wine_hierarchical = silhouette_score(df_wine_normalized.drop(columns=['Cluster_KMeans', 'Cluster_Hierarchical']), df_wine_normalized['Cluster_Hierarchical'])
+
+print(f"Silhouette Score - Iris (Hierarchical): {silhouette_iris_hierarchical}")
+print(f"Silhouette Score - Wine (Hierarchical): {silhouette_wine_hierarchical}")
