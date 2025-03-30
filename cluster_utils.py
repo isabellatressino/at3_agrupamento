@@ -2,6 +2,10 @@ from sklearn.cluster import KMeans
 from sklearn.metrics import silhouette_score
 from scipy.cluster.hierarchy import linkage, fcluster
 import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+from sklearn.cluster import AgglomerativeClustering
+from sklearn.metrics import silhouette_score
 
 def elbow_method(df_scaled, dataset_name):
     distance = []
@@ -25,13 +29,27 @@ def hierarchical_clustering(df_scaled, method, k):
     linked = linkage(df_scaled, method=method)
     return fcluster(linked, t=k, criterion='maxclust')
 
-def silhouette_scores(df_iris_normalized, df_wine_normalized):
-    silhouette_iris_kmeans = silhouette_score(df_iris_normalized.drop(columns=['Cluster_KMeans', 'Cluster_Hierarchical']), df_iris_normalized['Cluster_KMeans'])
-    silhouette_wine_kmeans = silhouette_score(df_wine_normalized.drop(columns=['Cluster_KMeans', 'Cluster_Hierarchical']), df_wine_normalized['Cluster_KMeans'])
-    silhouette_iris_hierarchical = silhouette_score(df_iris_normalized.drop(columns=['Cluster_KMeans', 'Cluster_Hierarchical']), df_iris_normalized['Cluster_Hierarchical'])
-    silhouette_wine_hierarchical = silhouette_score(df_wine_normalized.drop(columns=['Cluster_KMeans', 'Cluster_Hierarchical']), df_wine_normalized['Cluster_Hierarchical'])
 
-    print(f"Silhouette Score - Iris (KMeans): {silhouette_iris_kmeans}")
-    print(f"Silhouette Score - Wine (KMeans): {silhouette_wine_kmeans}")
-    print(f"Silhouette Score - Iris (Hierarchical): {silhouette_iris_hierarchical}")
-    print(f"Silhouette Score - Wine (Hierarchical): {silhouette_wine_hierarchical}")
+def test_silhouette_scores(df_normalized):
+    methods = ['single', 'complete', 'average', 'ward']
+    cluster_range = range(2, 11) 
+    
+    results_kmeans = []
+    results_linkage = []
+
+    for n_clusters in cluster_range:
+        # K-Means
+        kmeans_labels = kmeans(df_normalized, n_clusters)
+        kmeans_score = silhouette_score(df_normalized, kmeans_labels)
+        results_kmeans.append([n_clusters, round(kmeans_score, 4)])
+
+        # Linkage
+        for method in methods:
+            hierarchical_labels = hierarchical_clustering(df_normalized, method, n_clusters)
+            hierarchical_score = silhouette_score(df_normalized, hierarchical_labels)
+            results_linkage.append([method, n_clusters, round(hierarchical_score, 4)])
+
+    results_kmeans_df = pd.DataFrame(results_kmeans,columns=['N_Clusters', 'Silhouette Score'])
+    results_linkage_df = pd.DataFrame(results_linkage, columns=['Method', 'N_Clusters', 'Silhouette Score'])
+    
+    return results_kmeans_df, results_linkage_df

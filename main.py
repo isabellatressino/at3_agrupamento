@@ -1,5 +1,5 @@
 from preprocessing import normalize_data
-from cluster_utils import elbow_method, kmeans, hierarchical_clustering, silhouette_scores
+from cluster_utils import elbow_method, kmeans, hierarchical_clustering, test_silhouette_scores
 from visualization import plot_clusters, plot_dendrogram
 from sklearn.datasets import load_iris, load_wine
 
@@ -15,7 +15,7 @@ def main():
     df_iris = pd.DataFrame(iris_data.data, columns=iris_data.feature_names)
     df_wine = pd.DataFrame(wine_data.data, columns=wine_data.feature_names)
 
-    # # Verificar se precisamos fazer a normalização
+    # Verificar se precisamos fazer a normalização
     print("Iris Não-normalizado:")
     print(df_iris.head())
 
@@ -58,12 +58,24 @@ def main():
     plot_dendrogram(df_iris_normalized,'Iris','ward')
     plot_dendrogram(df_wine_normalized,'Wine','ward')
 
-    # Hierarchical clustering
-    df_iris_normalized['Cluster_Hierarchical'] = hierarchical_clustering(df_iris_normalized, 'complete', 3)
+    # Linkage
+    df_iris_normalized['Cluster_Hierarchical'] = hierarchical_clustering(df_iris_normalized, 'ward', 2)
     df_wine_normalized['Cluster_Hierarchical'] = hierarchical_clustering(df_wine_normalized, 'ward', 3)
 
     # Silhouette scores
-    silhouette_scores(df_iris_normalized, df_wine_normalized)
+    score_irirs_kmeans,score_irirs_linkage = test_silhouette_scores(df_iris_normalized.drop(columns=['Cluster_KMeans', 'Cluster_Hierarchical']))
+    print("Silhouette scores - Iris")
+    print("\nKmeans")
+    print(score_irirs_kmeans)
+    print("\nLinkage Family")
+    print(score_irirs_linkage)
+
+    score_wine_kmeans,score_wine_linkage = test_silhouette_scores(df_wine_normalized.drop(columns=['Cluster_KMeans', 'Cluster_Hierarchical']))
+    print("\nSilhouette scores - Wine")
+    print("\nKmeans")
+    print(score_wine_kmeans)
+    print("\nLinkage Family")
+    print(score_wine_linkage)
 
 if __name__ == "__main__":
     main()
