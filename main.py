@@ -38,7 +38,7 @@ def main():
     elbow_method(df_wine_normalized, "Wine")
 
     # KMeans 
-    df_iris_normalized['Cluster_KMeans'] = kmeans(df_iris_normalized, 3)
+    df_iris_normalized['Cluster_KMeans'] = kmeans(df_iris_normalized, 5)
     df_wine_normalized['Cluster_KMeans'] = kmeans(df_wine_normalized, 3)
 
     # Visualização dos clusters
@@ -63,15 +63,28 @@ def main():
     df_wine_normalized['Cluster_Hierarchical'] = hierarchical_clustering(df_wine_normalized, 'ward', 3)
 
     # Silhouette scores
+    score_irirs_kmeans_raw,score_irirs_linkage_raw = test_silhouette_scores(df_iris)
+    print("Silhouette scores - Iris S/ Normalização")
+    print("\nKmeans")
+    print(score_irirs_kmeans_raw)
+    print("\nLinkage Family")
+    print(score_irirs_linkage_raw)
     score_irirs_kmeans,score_irirs_linkage = test_silhouette_scores(df_iris_normalized.drop(columns=['Cluster_KMeans', 'Cluster_Hierarchical']))
-    print("Silhouette scores - Iris")
+    print("\nSilhouette scores - Iris Normalizado")
     print("\nKmeans")
     print(score_irirs_kmeans)
     print("\nLinkage Family")
     print(score_irirs_linkage)
 
+    score_wine_kmeans_raw,score_wine_linkage_raw = test_silhouette_scores(df_wine)
+    print("\nSilhouette scores - Wine S/ Normalização")
+    print("\nKmeans")
+    print(score_wine_kmeans_raw)
+    print("\nLinkage Family")
+    print(score_wine_linkage_raw)
+
     score_wine_kmeans,score_wine_linkage = test_silhouette_scores(df_wine_normalized.drop(columns=['Cluster_KMeans', 'Cluster_Hierarchical']))
-    print("\nSilhouette scores - Wine")
+    print("\nSilhouette scores - Wine Normalizado")
     print("\nKmeans")
     print(score_wine_kmeans)
     print("\nLinkage Family")
