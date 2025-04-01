@@ -1,6 +1,6 @@
 from preprocessing import normalize_data
 from cluster_utils import elbow_method, elbow_bisecting_kmeans, kmeans, hierarchical_clustering, test_silhouette_scores, bisect_kmeans
-from visualization import plot_clusters, plot_dendrogram, plot_bisect
+from visualization import plot_clusters, plot_dendrogram, plot_bisect, plot_original_iris, plot_original_wine
 from sklearn.datasets import load_iris, load_wine
 
 import pandas as pd
@@ -14,6 +14,11 @@ def main():
     # Conversão para DataFrame
     df_iris = pd.DataFrame(iris_data.data, columns=iris_data.feature_names)
     df_wine = pd.DataFrame(wine_data.data, columns=wine_data.feature_names)
+
+    plot_original_iris()
+
+    df_wine['class'] = wine_data.target
+    plot_original_wine(df_wine)
 
     # Verificar se precisamos fazer a normalização
     print("Iris Não-normalizado:")
