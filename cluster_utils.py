@@ -22,6 +22,25 @@ def elbow_method(df_scaled, dataset_name):
     plt.title(f'Método do Cotovelo - {dataset_name}')
     plt.show()
 
+def elbow_bisecting_kmeans(df,dataset_name, max_k=10, random_state=0):
+    inertias = []
+    ks = range(2, max_k + 1)
+
+    for k in ks:
+        model = BisectingKMeans(n_clusters=k, random_state=random_state)
+        model.fit(df)
+        inertias.append(model.inertia_)
+
+    # Plot do cotovelo
+    plt.figure(figsize=(8, 5))
+    plt.plot(ks, inertias, marker='o')
+    plt.title(f'Elbow - Bisecting KMeans - {dataset_name}')
+    plt.xlabel("Número de Clusters (k)")
+    plt.ylabel("Inércia (WSS)")
+    plt.grid(True)
+    plt.tight_layout()
+    plt.show()
+    
 def kmeans(df_scaled, k):
     kmeans = KMeans(n_clusters=k, random_state=0, n_init=10)
     return kmeans.fit_predict(df_scaled)
@@ -36,13 +55,17 @@ def test_silhouette_scores(df_normalized):
     cluster_range = range(2, 11) 
     
     results_kmeans = []
+    results_b_kmeans = []
     results_linkage = []
 
     for n_clusters in cluster_range:
         # K-Means
         kmeans_labels = kmeans(df_normalized, n_clusters)
+        b_kmeans_labels = bisect_kmeans(df_normalized, n_clusters)
         kmeans_score = silhouette_score(df_normalized, kmeans_labels)
+        b_kmeans_score= silhouette_score(df_normalized, b_kmeans_labels )
         results_kmeans.append([n_clusters, round(kmeans_score, 4)])
+        results_b_kmeans.append([n_clusters, round(b_kmeans_score, 4)])
 
         # Linkage
         for method in methods:
@@ -51,10 +74,11 @@ def test_silhouette_scores(df_normalized):
             results_linkage.append([method, n_clusters, round(hierarchical_score, 4)])
 
     results_kmeans_df = pd.DataFrame(results_kmeans,columns=['N_Clusters', 'Silhouette Score'])
+    results_b_kmeans_df = pd.DataFrame(results_b_kmeans,columns=['N_Clusters', 'Silhouette Score'])
     results_linkage_df = pd.DataFrame(results_linkage, columns=['Method', 'N_Clusters', 'Silhouette Score'])
     
-    return results_kmeans_df, results_linkage_df
+    return results_kmeans_df, results_b_kmeans_df, results_linkage_df
 
 def bisect_kmeans(df_scaled, k):
     bisect = BisectingKMeans(n_clusters=k, random_state=0).fit(df_scaled)
-    return  bisect.labels_
+    return  bisect.fit_predict(df_scaled)
