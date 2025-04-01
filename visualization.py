@@ -18,7 +18,7 @@ def plot_clusters(df_normalized, dataset_name):
 
 def plot_bisect(df_scaled, labels, dataset_name):
     pca = PCA(n_components=2)
-    reduced_data = pca.fit_transform(df_scaled)
+    reduced_data = pca.fit_transform(df_scaled.drop(columns=['Cluster_KMeans']))
 
     plt.figure(figsize=(6,4))
     sns.scatterplot(x=reduced_data[:, 0], y=reduced_data[:, 1], hue=labels, palette='viridis', s=50)
