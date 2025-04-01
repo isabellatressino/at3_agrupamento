@@ -36,7 +36,10 @@ def main():
     # Método do cotovelo
     elbow_method(df_iris, "Iris")
     elbow_method(df_wine_normalized, "Wine")
-
+    # Bisecting KMeans
+    elbow_bisecting_kmeans(df_iris, "Iris")
+    elbow_bisecting_kmeans(df_wine_normalized, "Wine")
+    
     # KMeans 
     df_iris['Cluster_KMeans'] = kmeans(df_iris, 4)
     df_iris_normalized['Cluster_KMeans'] = df_iris['Cluster_KMeans']
@@ -46,11 +49,9 @@ def main():
     plot_clusters(df_iris_normalized, "Iris")
     plot_clusters(df_wine_normalized, "Wine")
 
-    # Bisecting KMeans
-    elbow_bisecting_kmeans(df_iris, "Iris")
-    elbow_bisecting_kmeans(df_wine_normalized, "Wine")
+
     bisect_iris = bisect_kmeans(df_iris, 3)
-    bisect_wine = bisect_kmeans(df_wine_normalized, 4)
+    bisect_wine = bisect_kmeans(df_wine_normalized, 3)
     plot_bisect(df_iris_normalized, bisect_iris, "Bisect Iris")
     plot_bisect(df_wine_normalized, bisect_wine, "Bisect Wine")
 

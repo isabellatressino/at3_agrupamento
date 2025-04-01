@@ -80,5 +80,6 @@ def test_silhouette_scores(df_normalized):
     return results_kmeans_df, results_b_kmeans_df, results_linkage_df
 
 def bisect_kmeans(df_scaled, k):
+    df_scaled = df_scaled.drop(columns=['Cluster_KMeans'])
     bisect = BisectingKMeans(n_clusters=k, random_state=0).fit(df_scaled)
     return  bisect.fit_predict(df_scaled)
