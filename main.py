@@ -1,5 +1,5 @@
 from preprocessing import normalize_data
-from cluster_utils import elbow_method, kmeans, hierarchical_clustering, test_silhouette_scores
+from cluster_utils import elbow_method, kmeans, hierarchical_clustering, test_silhouette_scores, bisect_kmeans
 from visualization import plot_clusters, plot_dendrogram
 from sklearn.datasets import load_iris, load_wine
 
@@ -34,16 +34,23 @@ def main():
     print(df_wine_normalized.head())
 
     # Método do cotovelo
-    elbow_method(df_iris_normalized, "Iris")
+    elbow_method(df_iris, "Iris")
     elbow_method(df_wine_normalized, "Wine")
 
     # KMeans 
+    df_iris['Cluster_KMeans'] = kmeans(df_iris, 4)
     df_iris_normalized['Cluster_KMeans'] = kmeans(df_iris_normalized, 5)
     df_wine_normalized['Cluster_KMeans'] = kmeans(df_wine_normalized, 3)
 
     # Visualização dos clusters
     plot_clusters(df_iris_normalized, "Iris")
     plot_clusters(df_wine_normalized, "Wine")
+
+    # Bisecting KMeans
+    bisect_iris = bisect_kmeans(df_iris_normalized, 4)
+    bisect_wine = bisect_kmeans(df_wine_normalized, 5)
+    plot_clusters(bisect_iris, "Bisect Iris")
+    plot_clusters(bisect_wine, "Bisect Wine")
 
     # Dendrograma
     plot_dendrogram(df_iris_normalized,'Iris','single')
@@ -64,6 +71,7 @@ def main():
 
     # Silhouette scores
     score_irirs_kmeans_raw,score_irirs_linkage_raw = test_silhouette_scores(df_iris)
+    print("="*12)   
     print("Silhouette scores - Iris S/ Normalização")
     print("\nKmeans")
     print(score_irirs_kmeans_raw)
@@ -76,6 +84,7 @@ def main():
     print("\nLinkage Family")
     print(score_irirs_linkage)
 
+    print("="*12)
     score_wine_kmeans_raw,score_wine_linkage_raw = test_silhouette_scores(df_wine)
     print("\nSilhouette scores - Wine S/ Normalização")
     print("\nKmeans")

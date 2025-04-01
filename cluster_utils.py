@@ -6,6 +6,7 @@ import numpy as np
 import pandas as pd
 from sklearn.cluster import AgglomerativeClustering
 from sklearn.metrics import silhouette_score
+from sklearn.cluster import KMeans, BisectingKMeans
 
 def elbow_method(df_scaled, dataset_name):
     distance = []
@@ -53,3 +54,7 @@ def test_silhouette_scores(df_normalized):
     results_linkage_df = pd.DataFrame(results_linkage, columns=['Method', 'N_Clusters', 'Silhouette Score'])
     
     return results_kmeans_df, results_linkage_df
+
+def bisect_kmeans(df_scaled, k):
+    bisect = BisectingKMeans(n_clusters=k, random_state=0).fit(df_scaled)
+    return  bisect.labels_
