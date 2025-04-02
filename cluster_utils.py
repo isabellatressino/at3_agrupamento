@@ -77,7 +77,6 @@ def test_silhouette_scores(df_normalized):
     results_linkage = []
 
     for n_clusters in cluster_range:
-        # K-Means
         kmeans_labels = kmeans(df_normalized, n_clusters)
         b_kmeans_labels = bisect_kmeans(df_normalized, n_clusters)
         kmeans_score = silhouette_score(df_normalized, kmeans_labels)
@@ -85,7 +84,6 @@ def test_silhouette_scores(df_normalized):
         results_kmeans.append([n_clusters, round(kmeans_score, 4)])
         results_b_kmeans.append([n_clusters, round(b_kmeans_score, 4)])
 
-        # Linkage
         for method in methods:
             hierarchical_labels = hierarchical_clustering(df_normalized, method, n_clusters)
             hierarchical_score = silhouette_score(df_normalized, hierarchical_labels)

@@ -7,11 +7,9 @@ import pandas as pd
 
 def main():
 
-    # Base de dados
     iris_data = load_iris()
     wine_data = load_wine()
 
-    # Conversão para DataFrame
     df_iris = pd.DataFrame(iris_data.data, columns=iris_data.feature_names)
     df_wine = pd.DataFrame(wine_data.data, columns=wine_data.feature_names)
 
@@ -20,7 +18,6 @@ def main():
     df_wine['class'] = wine_data.target
     plot_original_wine(df_wine)
 
-    # Verificar se precisamos fazer a normalização
     print("Iris Não-normalizado:")
     print(df_iris.head())
 
@@ -31,30 +28,24 @@ def main():
     df_iris_normalized = normalize_data(df_iris)
     df_wine_normalized = normalize_data(df_wine)
 
-    # Exibir normalizados
     print("\nIris Normalizado:")
     print(df_iris_normalized.head())
 
     print("\nWine Normalizado:")
     print(df_wine_normalized.head())
 
-    # Método do cotovelo
     elbow_method(df_iris, "Iris")
     elbow_method(df_wine_normalized, "Wine")
-    # Bisecting KMeans
     elbow_bisecting_kmeans(df_iris, "Iris")
     elbow_bisecting_kmeans(df_wine_normalized, "Wine")
-    #Linkage
     elbow_silhouette_method(df_iris, "Iris")
     elbow_silhouette_method(df_wine_normalized, "Wine")
 
 
-    # KMeans 
     df_iris['Cluster_KMeans'] = kmeans(df_iris, 4)
     df_iris_normalized['Cluster_KMeans'] = df_iris['Cluster_KMeans']
     df_wine_normalized['Cluster_KMeans'] = kmeans(df_wine_normalized, 3)
 
-    # Visualização dos clusters - PCA
     plot_clusters(df_iris_normalized, "Iris")
     plot_clusters(df_wine_normalized, "Wine")
 
@@ -64,7 +55,6 @@ def main():
     plot_bisect(df_iris_normalized, bisect_iris, "Bisect Iris")
     plot_bisect(df_wine_normalized, bisect_wine, "Bisect Wine")
 
-    # Dendrograma
     plot_dendrogram(df_iris,'Iris','single')
     plot_dendrogram(df_wine_normalized,'Wine','single')
 
@@ -77,11 +67,9 @@ def main():
     plot_dendrogram(df_iris,'Iris','ward')
     plot_dendrogram(df_wine_normalized,'Wine','ward')
 
-    # Linkage
     df_iris['Cluster_Hierarchical'] = hierarchical_clustering(df_iris, 'ward', 2)
     df_wine_normalized['Cluster_Hierarchical'] = hierarchical_clustering(df_wine_normalized, 'ward', 3)
 
-    # Silhouette scores
     score_irirs_kmeans_raw,score_iris_b_kmeans_raw, score_irirs_linkage_raw = test_silhouette_scores(df_iris)
     print("="*12)   
     print("Silhouette scores - Iris S/ Normalização")
