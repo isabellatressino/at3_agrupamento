@@ -44,11 +44,13 @@ def main():
     # Bisecting KMeans
     elbow_bisecting_kmeans(df_iris, "Iris")
     elbow_bisecting_kmeans(df_wine_normalized, "Wine")
-    
+    #Linkage
+    elbow_silhouette_method(df_iris, "Iris")
+    elbow_silhouette_method(df_wine_normalized, "Wine")
+
+
     # KMeans 
     df_iris['Cluster_KMeans'] = kmeans(df_iris, 4)
-    df_wine['Cluster_KMeans'] = kmeans(df_wine, 3)
-
     df_iris_normalized['Cluster_KMeans'] = df_iris['Cluster_KMeans']
     df_wine_normalized['Cluster_KMeans'] = kmeans(df_wine_normalized, 3)
 
@@ -76,7 +78,7 @@ def main():
     plot_dendrogram(df_wine_normalized,'Wine','ward')
 
     # Linkage
-    df_iris['Cluster_Hierarchical'] = hierarchical_clustering(df_iris, 'ward', 4)
+    df_iris['Cluster_Hierarchical'] = hierarchical_clustering(df_iris, 'ward', 2)
     df_wine_normalized['Cluster_Hierarchical'] = hierarchical_clustering(df_wine_normalized, 'ward', 3)
 
     # Silhouette scores
