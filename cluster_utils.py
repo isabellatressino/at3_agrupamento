@@ -40,7 +40,25 @@ def elbow_bisecting_kmeans(df,dataset_name, max_k=10, random_state=0):
     plt.grid(True)
     plt.tight_layout()
     plt.show()
-    
+
+def elbow_silhouette_method(df_scaled, dataset_name):
+    silhouette_scores = []
+    k_range = range(2, 11)
+
+    for k in k_range:
+        kmeans = KMeans(n_clusters=k, random_state=0, n_init=10).fit(df_scaled)
+        labels = kmeans.labels_
+        score = silhouette_score(df_scaled, labels)
+        silhouette_scores.append(score)
+
+    plt.figure(figsize=(6, 4))
+    plt.plot(k_range, silhouette_scores, marker='o')
+    plt.xlabel('Número de Clusters (k)')
+    plt.ylabel('Silhouette Score')
+    plt.title(f'Silhouette - Método do Cotovelo (Elbow) - {dataset_name}')
+    plt.grid(True)
+    plt.show()
+
 def kmeans(df_scaled, k):
     kmeans = KMeans(n_clusters=k, random_state=0, n_init=10)
     return kmeans.fit_predict(df_scaled)
