@@ -47,6 +47,8 @@ def main():
     
     # KMeans 
     df_iris['Cluster_KMeans'] = kmeans(df_iris, 4)
+    df_wine['Cluster_KMeans'] = kmeans(df_wine, 3)
+
     df_iris_normalized['Cluster_KMeans'] = df_iris['Cluster_KMeans']
     df_wine_normalized['Cluster_KMeans'] = kmeans(df_wine_normalized, 3)
 
@@ -106,7 +108,7 @@ def main():
     print("\nLinkage Family")
     print(score_wine_linkage_raw)
 
-    score_wine_kmeans,score_wine_b_kmeans, score_wine_linkage = test_silhouette_scores(df_wine_normalized.drop(columns=['Cluster_KMeans', 'Cluster_Hierarchical']))
+    score_wine_kmeans,score_wine_b_kmeans, score_wine_linkage = test_silhouette_scores(df_wine_normalized)
     print("\nSilhouette scores - Wine Normalizado")
     print("\nKmeans")
     print(score_wine_kmeans)
